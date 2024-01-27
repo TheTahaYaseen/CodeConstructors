@@ -1,0 +1,33 @@
+{% extends "layout.html" %} {% block content %}
+
+<form method="POST">
+	{% csrf_token %}
+	<div class="my-5 mx-4">
+		<h1 class="form_heading fs-1">{{form_action}}</h1>
+		{% if error %}
+		<h1 class="form_heading fs-4">*{{error}}!</h1>
+		{% endif %}
+		<input
+			type="text"
+			class="form_input mt-2 px-2 fs-4 w-100"
+			placeholder="Desired username here...."
+			style="border-radius: 7.5px"
+			name="username"
+		/>
+		<input
+			type="password"
+			class="form_input mt-2 px-2 fs-4 w-100"
+			placeholder="Desired password here...."
+			style="border-radius: 7.5px"
+			name="password"
+		/>
+		<button
+			type="submit"
+			class="form_button mt-3 px-4 py-1 border-0 fs-4 rounded-pill"
+			style="border-radius: 7.5px"
+		>
+			{{form_action}}
+		</button>
+	</div>
+</form>
+{% endblock content %}

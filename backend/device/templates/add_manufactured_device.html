@@ -1,0 +1,29 @@
+{% extends "layout.html" %} {% block content %}
+
+<form method="POST">
+	{% csrf_token %}
+	<div class="my-5 mx-4">
+		<h1 class="form_heading fs-1">Add Manufactured Device Id</h1>
+		{% if error %}
+		<h1 class="form_heading fs-4">*{{error}}!</h1>
+		{% endif %}
+		<hr />
+		<input
+			type="text"
+			class="form_input mt-2 px-2 fs-4 w-100"
+			placeholder="Desired device manufacturing id here...."
+			style="border-radius: 7.5px"
+			name="manufacturing_id"
+			value="{{manufacturing_id}}"
+		/>
+		<button
+			type="submit"
+			class="form_button mt-3 px-4 py-1 border-0 fs-4 rounded-pill"
+			style="border-radius: 7.5px"
+		>
+			Add
+		</button>
+	</div>
+</form>
+
+{% endblock content %}

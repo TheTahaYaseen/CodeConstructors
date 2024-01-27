@@ -1,0 +1,13 @@
+<div>
+	<a href="{% url 'validate_device' %}"
+		><button
+			class="mx-2 form_button mt-3 px-4 py-1 border-0 fs-4 rounded-pill"
+			style="border-radius: 7.5px"
+		>
+			Add
+		</button></a
+	>
+</div>
+{% for device in devices %} {% include "./device_component.html" %}
+<span></span>
+{% endfor %}

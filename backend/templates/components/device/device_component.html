@@ -1,0 +1,50 @@
+<div class="my-5 mx-4">
+	<hr />
+	<a href="{% url 'remove_device' device.id %}"><button
+			class="form_button mt-3 px-4 py-1 border-0 fs-4 rounded-pill"
+			style="border-radius: 7.5px">
+			Remove
+		</button></a>
+	<h1 class="form_heading fs-1">Device #{{device.id}}</h1>
+	{% if device.associated_wifi_credentials %}
+	<a
+		href="{% url 'update_wifi_credentials' device.associated_wifi_credentials.id %}">
+		<button
+			class="form_button px-2 py-1 border-0 fs-5 rounded-pill"
+			style="border-radius: 7.5px">
+			Update Wifi Credentials
+		</button>
+	</a>
+	<p class="fs-4 mt-1 my-0 form_heading">Wifi SSID</p>
+	<p class="fs-5 mt-1 my-0">{{device.associated_wifi_credentials.ssid}}</p>
+	{% else %}
+	<a
+		href="{% url 'get_wifi_credentials' device.id %}">
+		<button
+			class="form_button px-2 py-1 border-0 fs-5 rounded-pill"
+			style="border-radius: 7.5px">
+			Add Wifi Credentials
+		</button>
+	</a>
+	{% endif %}
+	<p class="fs-4 mt-1 my-0 form_heading">Presence</p>
+	<p class="fs-5 mt-1 my-0">
+		{% if device.presence %} Present {% else %} None Present {% endif %}
+	</p>
+
+	<a href="{% url 'toggle_state' device.id %}">
+		<button
+			class="form_button mt-3 px-4 py-1 border-0 fs-4 rounded-pill"
+			style="border-radius: 7.5px">
+			{% if device.state %} On {% else %} Off {% endif %}
+		</button>
+	</a>
+	<a href="{% url 'toggle_mode' device.id %}">
+		<button
+			class="form_button mt-3 px-4 py-1 border-0 fs-4 rounded-pill"
+			style="border-radius: 7.5px">
+			{% if device.is_auto %} Auto {% else %} Manual {% endif %}
+		</button>
+	</a>
+	<hr />
+</div>
