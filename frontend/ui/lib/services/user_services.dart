@@ -5,7 +5,7 @@ import 'package:ui/api_client/api_client.dart';
 import 'package:ui/utils/api_constants.dart';
 import 'package:ui/models/user_model.dart';
 
-class PersonServices {
+class UserServices {
   final ApiClient _apiClient = ApiClient();
 
   Future<http.Response> register(UserModel user) async {
@@ -13,5 +13,18 @@ class PersonServices {
     String jsonUser = jsonEncode(user.toJson());
 
     return await _apiClient.post(endpoint, jsonUser);
+  }
+
+  Future<http.Response> login(UserModel user) async {
+    String endpoint = ApiConstants.login;
+    String jsonUser = jsonEncode(user.toJson());
+
+    return await _apiClient.post(endpoint, jsonUser);
+  }
+
+  Future<http.Response> logout(UserModel user) async {
+    String endpoint = ApiConstants.logout;
+
+    return await _apiClient.put(endpoint);
   }
 }

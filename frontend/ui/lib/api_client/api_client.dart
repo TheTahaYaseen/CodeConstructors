@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:ui/utils/api_constants.dart';
 
@@ -11,5 +13,14 @@ class ApiClient {
     return await http.post(Uri.parse(url), body: body, headers: {
       'Content-Type': 'application/json',
     });
+  }
+
+  Future<http.Response> put(String url, {Map<String, dynamic>? data}) async {
+    var response = await http.put(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: data != null ? jsonEncode(data) : null,
+    );
+    return response;
   }
 }
