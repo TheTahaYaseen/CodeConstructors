@@ -24,4 +24,16 @@ class DeviceModel {
         anyPresence = json["any_presence"],
         state = json["state"],
         isAuto = json["is_auto"];
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "manufacturingId": manufacturingId,
+      "associatedWifiCredentials": associatedWifiCredentials,
+      "associatedUser": associatedUser,
+      "anyPresence": anyPresence,
+      "state": state,
+      "isAuto": isAuto,
+    };
+  }
 }

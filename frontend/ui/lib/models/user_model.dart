@@ -9,4 +9,8 @@ class UserModel {
       : id = json["id"],
         username = json["username"],
         password = json["password"];
+
+  Map<String, dynamic> toJson() {
+    return {"id": id, "username": username, "password": password};
+  }
 }
