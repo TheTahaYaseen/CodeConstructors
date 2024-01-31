@@ -22,9 +22,9 @@ class UserServices {
     return await _apiClient.post(endpoint, jsonUser);
   }
 
-  Future<http.Response> logout(UserModel user) async {
+  Future<http.Response> logout() async {
     String endpoint = ApiConstants.logout;
 
-    return await _apiClient.put(endpoint);
+    return await _apiClient.put(endpoint, "");
   }
 }

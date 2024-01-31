@@ -8,6 +8,20 @@ import 'package:ui/models/wifi_credential_model.dart';
 class WifiCredentialServices {
   final ApiClient _apiClient = ApiClient();
 
+  Future<List<WifiCredentialModel>> wifiCredentials(
+      WifiCredentialModel wifiCredential) async {
+    String endpoint = ApiConstants.wifiCredentials;
+    final response = _apiClient.get(endpoint);
+
+    List<WifiCredentialModel> wifiCredentials = [];
+
+    for (var json in response["data"]) {
+      wifiCredentials.add(WifiCredentialModel.fromJson(json));
+    }
+
+    return wifiCredentials;
+  }
+
   Future<http.Response> getWifiCredentials(
       WifiCredentialModel wifiCredential) async {
     String endpoint = ApiConstants.getWifiCredentials;

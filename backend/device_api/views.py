@@ -1,5 +1,3 @@
-from django.shortcuts import redirect, render
-
 from device.models import Device, WifiCredential
 
 from rest_framework.response import Response
@@ -142,7 +140,6 @@ def update_wifi_credentials_view(request, wifi_credentials_id):
 
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])
-@is_user_associated_to_device
 @is_user_associated_to_device
 def toggle_state_view(request, device_id):
     device = Device.objects.get(id=device_id)

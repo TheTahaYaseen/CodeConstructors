@@ -18,7 +18,9 @@ class ApiClient {
   Future<http.Response> put(String url, {Map<String, dynamic>? data}) async {
     var response = await http.put(
       Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
+      headers: <String, String>{
+        "Content-Type": "application/json",
+      },
       body: data != null ? jsonEncode(data) : null,
     );
     return response;
