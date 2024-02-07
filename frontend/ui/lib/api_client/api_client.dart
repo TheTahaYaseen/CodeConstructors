@@ -15,7 +15,8 @@ class ApiClient {
     });
   }
 
-  Future<http.Response> put(String url, {Map<String, dynamic>? data}) async {
+  Future<http.Response> put(String url, String s,
+      {Map<String, dynamic>? data}) async {
     var response = await http.put(
       Uri.parse(url),
       headers: <String, String>{
