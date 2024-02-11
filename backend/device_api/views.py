@@ -1,28 +1,39 @@
 from device.models import Device, WifiCredential
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-
-from device_api.decorators import is_user_associated_to_device
-
+from rest_framework.decorators import api_view
 from .serializers import DeviceSerializer, WifiCredentialSerializer
 
-# Create your views here.
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import AccessToken
+
+def get_logged_in_user(request):
+    try:
+        token = request.META.get('HTTP_AUTHORIZATION', "").split(' ')[1]    
+        decoded_data = AccessToken(token)
+        user_id = decoded_data['user_id']
+        user = User.objects.get(id=user_id)
+        return User
+    except Exception as e:
+        return None
+
 @api_view(["GET"])
-# @permission_classes([IsAuthenticated])
 def devices_view(request):
     # if request.user.is_superuser:
     devices = Device.objects.all()
     # else:
-    devices = Device.objects.filter(associated_user=request.user)
+    # devices = Device.objects.filter(associated_user=request.user)
     device_serializer = DeviceSerializer(devices, many=True)
     return Response(device_serializer.data)
 
 @api_view(["POST"])
-# @permission_classes([IsAuthenticated])
 def add_manufactured_device_view(request):
     message = ""
+
+    user = get_logged_in_user(request)
+
+    if user is not None:
+        print(user.username)
 
     # if request.user.is_superuser:
 
@@ -47,7 +58,6 @@ def add_manufactured_device_view(request):
     return Response(context)
 
 @api_view(["PUT"])
-# @permission_classes([IsAuthenticated])
 def validate_device_view(request):
     message = ""
 
@@ -75,7 +85,6 @@ def validate_device_view(request):
     return Response(context)
 
 @api_view(["GET"])
-# @permission_classes([IsAuthenticated])
 def wifi_credentials_view(request):
     # if request.user.is_superuser:
     wifi_credentials = WifiCredential.objects.all()
@@ -85,7 +94,6 @@ def wifi_credentials_view(request):
     return Response(wifi_credential_serializer.data)
 
 @api_view(["POST"])
-# @permission_classes([IsAuthenticated])
 # @is_user_associated_to_device
 def get_wifi_credentials_view(request, device_id):
 
@@ -114,7 +122,6 @@ def get_wifi_credentials_view(request, device_id):
     return Response(context)
 
 @api_view(["PUT"])
-# @permission_classes([IsAuthenticated])
 def update_wifi_credentials_view(request, wifi_credentials_id):
     
     wifi_credentials = WifiCredential.objects.get(id=wifi_credentials_id)
@@ -141,7 +148,6 @@ def update_wifi_credentials_view(request, wifi_credentials_id):
     return Response(context)    
 
 @api_view(["PUT"])
-# @permission_classes([IsAuthenticated])
 # @is_user_associated_to_device
 def toggle_state_view(request, device_id):
     device = Device.objects.get(id=device_id)
@@ -154,7 +160,6 @@ def toggle_state_view(request, device_id):
     return Response(context)    
 
 @api_view(["PUT"])
-# @permission_classes([IsAuthenticated])
 # @is_user_associated_to_device
 def toggle_mode_view(request, device_id):
     device = Device.objects.get(id=device_id)
@@ -167,7 +172,6 @@ def toggle_mode_view(request, device_id):
     return Response(context)    
 
 @api_view(["PUT"])
-# @permission_classes([IsAuthenticated])
 # @is_user_associated_to_device
 def remove_device_view(request, device_id):
     device = Device.objects.get(id=device_id)

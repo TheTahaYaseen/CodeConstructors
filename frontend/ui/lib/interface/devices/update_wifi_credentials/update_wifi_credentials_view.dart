@@ -108,8 +108,8 @@ class _UpdateWifiCredentialsViewState extends State<UpdateWifiCredentialsView> {
                             UserModel user = UserModel(
                                 username: usernameController.text,
                                 password: passwordController.text);
-                            http.Response response = await UserServices()
-                                .update_wifi_credentials(user);
+                            http.Response response =
+                                await UserServices().login(user);
                             var responseBody = jsonDecode(response.body);
                             String message = responseBody["message"];
                             setState(() {
