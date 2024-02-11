@@ -31,14 +31,14 @@ class ApiClient {
     );
   }
 
-  Future<http.Response> put(String endpoint,
-      {Map<String, dynamic>? data}) async {
+  Future<http.Response> put(String endpoint, Map<String, dynamic> jsonDevice,
+      {required Map<String, dynamic> data}) async {
     String url = ApiConstants.baseUrl + endpoint;
     var headers = await _getHeaders();
     return http.put(
       Uri.parse(url),
       headers: headers,
-      body: data != null ? jsonEncode(data) : null,
+      body: jsonEncode(data),
     );
   }
 }

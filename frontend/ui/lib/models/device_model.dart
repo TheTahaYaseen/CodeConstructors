@@ -28,12 +28,12 @@ class DeviceModel {
   Map<String, dynamic> toJson() {
     return {
       "id": id,
-      "manufacturingId": manufacturingId,
-      "associatedWifiCredentials": associatedWifiCredentials,
-      "associatedUser": associatedUser,
-      "anyPresence": anyPresence,
+      "manufacturing_id": manufacturingId,
+      "associated_wifi_credentials": associatedWifiCredentials,
+      "associated_user": associatedUser,
+      "any_presence": anyPresence,
       "state": state,
-      "isAuto": isAuto,
+      "is_auto": isAuto,
     };
   }
 }

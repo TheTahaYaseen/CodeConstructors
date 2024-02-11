@@ -10,11 +10,13 @@ class DeviceServices {
 
   Future<List<DeviceModel>> devices(DeviceModel device) async {
     String endpoint = ApiConstants.baseDevicesUrl;
-    final response = _apiClient.get(endpoint);
+    final response = await _apiClient.get(endpoint);
+
+    List<dynamic> jsonResponses = jsonDecode(response.body)["data"];
 
     List<DeviceModel> devices = [];
 
-    for (var json in response["data"]) {
+    for (var json in jsonResponses) {
       devices.add(DeviceModel.fromJson(json));
     }
 
@@ -23,36 +25,36 @@ class DeviceServices {
 
   Future<http.Response> addManufacturedDevice(DeviceModel device) async {
     String endpoint = ApiConstants.addManufacturedDevice;
-    String jsonDevice = jsonEncode(device.toJson());
+    Map<String, dynamic> jsonDevice = device.toJson();
 
     return await _apiClient.post(endpoint, jsonDevice);
   }
 
   Future<http.Response> validateDevice(DeviceModel device) async {
     String endpoint = ApiConstants.validate;
-    String jsonDevice = jsonEncode(device.toJson());
+    Map<String, dynamic> jsonDevice = device.toJson();
 
-    return await _apiClient.put(endpoint, jsonDevice);
+    return await _apiClient.put(endpoint, jsonDevice, data: {});
   }
 
   Future<http.Response> toggleState(DeviceModel device) async {
     String endpoint =
         ApiConstants.toggleState.replaceAll("deviceId", device.id.toString());
 
-    return await _apiClient.put(endpoint, "");
+    return await _apiClient.put(endpoint, {}, data: {});
   }
 
   Future<http.Response> toggleMode(DeviceModel device) async {
     String endpoint =
         ApiConstants.toggleMode.replaceAll("deviceId", device.id.toString());
 
-    return await _apiClient.put(endpoint, "");
+    return await _apiClient.put(endpoint, {}, data: {});
   }
 
   Future<http.Response> removeDevice(DeviceModel device) async {
     String endpoint =
         ApiConstants.removeDevice.replaceAll("deviceId", device.id.toString());
 
-    return await _apiClient.put(endpoint, "");
+    return await _apiClient.put(endpoint, {}, data: {});
   }
 }

@@ -108,7 +108,7 @@ class _GetWifiCredentialsViewState extends State<GetWifiCredentialsView> {
                                 username: usernameController.text,
                                 password: passwordController.text);
                             http.Response response =
-                                await UserServices().get_wifi_credentials(user);
+                                await UserServices().login(user);
                             var responseBody = jsonDecode(response.body);
                             String message = responseBody["message"];
                             setState(() {

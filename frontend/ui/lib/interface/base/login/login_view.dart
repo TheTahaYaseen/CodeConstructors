@@ -111,7 +111,6 @@ class _LoginViewState extends State<LoginView> {
                             http.Response response =
                                 await UserServices().login(user);
                             var responseBody = jsonDecode(response.body);
-                            print(response.body);
                             String message = responseBody["message"];
                             if (message == "User logged in!") {
                               var token = responseBody['access'];

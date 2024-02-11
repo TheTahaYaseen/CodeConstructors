@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-import 'package:ui/interface/devices/validate/validate_viewmodel.dart';
 import 'package:ui/interface/constants.dart';
-import 'package:ui/models/user_model.dart';
-import 'package:ui/services/user_services.dart';
+import 'package:ui/interface/devices/validate/validate_viewmodel.dart';
+import 'package:ui/models/device_model.dart';
+import 'package:ui/services/device_services.dart';
 import 'package:http/http.dart' as http;
 
 class ValidateView extends StatefulWidget {
@@ -17,7 +17,7 @@ class ValidateView extends StatefulWidget {
 
 class _ValidateViewState extends State<ValidateView> {
   String error = "";
-  String username = "";
+  String manufacturingId = "";
   String password = "";
 
   @override
@@ -30,9 +30,9 @@ class _ValidateViewState extends State<ValidateView> {
     double innerVerticalPadding = screenSize.height * 0.05;
     double horizontalTextPadding = screenSize.width * 0.02;
     double verticalTextPadding = screenSize.height * 0.015;
-    TextEditingController usernameController = TextEditingController();
+    TextEditingController manufacturingIdController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-    usernameController.text = username;
+    manufacturingIdController.text = manufacturingId;
     passwordController.text = password;
 
     return ViewModelBuilder.reactive(
@@ -57,7 +57,7 @@ class _ValidateViewState extends State<ValidateView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Validate',
+                      'Validate Your Device',
                       style:
                           Theme.of(context).textTheme.headlineLarge?.copyWith(
                                 color: AppConstants.primaryColor,
@@ -74,43 +74,35 @@ class _ValidateViewState extends State<ValidateView> {
                     ),
                     const SizedBox(height: 12),
                     TextField(
-                      controller: usernameController,
+                      controller: manufacturingIdController,
                       decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           label: Text(
-                            'Username',
+                            'Manufacturing Id',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyLarge
                                 ?.copyWith(fontWeight: FontWeight.w500),
                           )),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          label: Text(
-                            'Password',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(fontWeight: FontWeight.w500),
-                          )),
-                      obscureText: true,
                     ),
                     const SizedBox(height: 30),
                     Wrap(
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            UserModel user = UserModel(
-                                username: usernameController.text,
-                                password: passwordController.text);
-                            http.Response response =
-                                await UserServices().validate(user);
-                            var responseBody = jsonDecode(response.body);
-                            String message = responseBody["message"];
+                            String message;
+                            if (manufacturingIdController.text.isEmpty) {
+                              message = "Manufacturing Id Must Be Provided!";
+                            } else {
+                              String? manufacturingId =
+                                  manufacturingIdController.text;
+                              DeviceModel device =
+                                  DeviceModel(manufacturingId: manufacturingId);
+                              http.Response response =
+                                  await DeviceServices().validateDevice(device);
+                              var responseBody = jsonDecode(response.body);
+                              message = responseBody["message"];
+                            }
                             setState(() {
                               error = message;
                             });

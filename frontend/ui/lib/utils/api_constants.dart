@@ -10,7 +10,7 @@ class ApiConstants {
   static String addManufacturedDevice =
       "$baseDevicesUrl/add_manufactured_device";
 
-  static String validate = "$baseDevicesUrl/";
+  static String validate = "$baseDevicesUrl/validate";
 
   static String wifiCredentials = "$baseDevicesUrl/ wifi_credentials";
   static String getWifiCredentials =

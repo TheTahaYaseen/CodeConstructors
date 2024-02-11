@@ -19,6 +19,7 @@ def register_view(request):
                 message = "User with username already exists"
             except User.DoesNotExist:
                 user = User.objects.create_user(username=username, password=password)
+                login(request, user)
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'refresh': str(refresh),
@@ -36,11 +37,11 @@ def login_view(request):
     username = request.data["username"]
     password = request.data["password"]
 
-
     if username and password:
         user = authenticate(username=username, password=password)
         if user is not None:
             refresh = RefreshToken.for_user(user)
+            login(request, user)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),

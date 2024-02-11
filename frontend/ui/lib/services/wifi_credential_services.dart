@@ -11,11 +11,13 @@ class WifiCredentialServices {
   Future<List<WifiCredentialModel>> wifiCredentials(
       WifiCredentialModel wifiCredential) async {
     String endpoint = ApiConstants.wifiCredentials;
-    final response = _apiClient.get(endpoint);
+    final response = await _apiClient.get(endpoint);
 
     List<WifiCredentialModel> wifiCredentials = [];
 
-    for (var json in response["data"]) {
+    List<dynamic> jsonResponses = jsonDecode(response.body)["data"];
+
+    for (var json in jsonResponses) {
       wifiCredentials.add(WifiCredentialModel.fromJson(json));
     }
 
@@ -33,8 +35,8 @@ class WifiCredentialServices {
   Future<http.Response> updateWifiCredentials(
       WifiCredentialModel wifiCredential) async {
     String endpoint = ApiConstants.updateWifiCredentials;
-    String jsonWifiCredential = jsonEncode(wifiCredential.toJson());
+    Map<String, dynamic> jsonWifiCredential = wifiCredential.toJson();
 
-    return await _apiClient.put(endpoint, jsonWifiCredential);
+    return await _apiClient.put(endpoint, jsonWifiCredential, data: {});
   }
 }
