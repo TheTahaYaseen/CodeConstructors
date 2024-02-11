@@ -28,7 +28,7 @@ def add_manufactured_device_view(request):
 
         manufacturing_id = request.data["manufacturing_id"]        
 
-        if manufacturing_id == "":
+        if not manufacturing_id:
             message = "Manufacturing id must be given!"
         elif len(manufacturing_id) > 255:
             message = "Length of manufacturing id should be less than 255 characters!"

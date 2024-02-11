@@ -24,7 +24,7 @@ def add_manufactured_device_view(request):
     if request.method == "POST":
         manufacturing_id = request.POST.get("manufacturing_id")        
 
-        if manufacturing_id == "":
+        if not manufacturing_id:
             message = "Please donot leave the field empty!"
         elif len(manufacturing_id) > 255:
             message = "Length of manufacturing id should be less than 255 characters!"

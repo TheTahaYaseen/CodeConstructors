@@ -1,13 +1,10 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
-
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
+from rest_framework_simplejwt.tokens import RefreshToken
 
-
-# Create your views here.
+# Register View
 @api_view(["POST"])
 def register_view(request):
     username = request.data["username"]
@@ -22,45 +19,36 @@ def register_view(request):
                 message = "User with username already exists"
             except User.DoesNotExist:
                 user = User.objects.create_user(username=username, password=password)
-                login(request, user)
-                message = "User registered and logged in!"
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'message': "User registered successfully!"
+                })           
     else:
-        message = "Username and password must be given!"
+        message = "Username and password must be provided!"
 
-    context = {"message": message}
-    return Response(context)
+    return Response({"message": message})
 
+# Login View
 @api_view(["POST"])
 def login_view(request):
-
     username = request.data["username"]
     password = request.data["password"]
 
+
     if username and password:
-        try:
-            user = User.objects.get(username=username)
-
-            user = authenticate(request=request, username=username, password=password)
-
-            if user is not None:
-                login(request, user)
-                message = "User logged in!"
-            else: 
-                message = "Incorrect credentials given!"
-
-        except User.DoesNotExist:
-            message = "User with username doesn't exist!"
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'message': "User logged in successfully!"
+            })
+        else: 
+            message = "Incorrect username or password!"
     else:
-        message = "Username and password must be given!"
+        message = "Username and password must be provided!"
 
-
-    context = {"message": message}
-    return Response(context)
-
-@api_view(["PUT"])
-@permission_classes([IsAuthenticated])
-def logout_view(request):
-    logout(request)
-    message = "User logged out!"
-    context = {"message": message}
-    return Response(context)
+    return Response({"message": message})

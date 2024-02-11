@@ -30,9 +30,12 @@ INSTALLED_APPS = [
     'device.apps.DeviceConfig',
     
     'rest_framework',
+    'rest_framework_simplejwt',
     
     'base_api.apps.BaseApiConfig',
     'device_api.apps.DeviceApiConfig',
+
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -43,6 +46,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',
+    
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:60159",  
 ]
 
 ROOT_URLCONF = 'code_constructors.urls'
@@ -97,6 +108,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

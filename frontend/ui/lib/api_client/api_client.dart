@@ -1,29 +1,44 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
+import 'package:ui/storage.dart';
 import 'package:ui/utils/api_constants.dart';
 
 class ApiClient {
-  get(endpoint) {
-    http.get(Uri.parse(ApiConstants.baseUrl + endpoint));
-  }
+  final SecureStorage _secureStorage = SecureStorage();
 
-  Future<http.Response> post(String endpoint, String body) async {
-    String url = ApiConstants.baseUrl + endpoint;
-    return await http.post(Uri.parse(url), body: body, headers: {
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await _secureStorage.getToken();
+    return {
       'Content-Type': 'application/json',
-    });
+      'Accept': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
   }
 
-  Future<http.Response> put(String url, String s,
-      {Map<String, dynamic>? data}) async {
-    var response = await http.put(
+  Future<http.Response> get(String endpoint) async {
+    String url = ApiConstants.baseUrl + endpoint;
+    var headers = await _getHeaders();
+    return http.get(Uri.parse(url), headers: headers);
+  }
+
+  Future<http.Response> post(String endpoint, dynamic body) async {
+    String url = ApiConstants.baseUrl + endpoint;
+    var headers = await _getHeaders();
+    return http.post(
       Uri.parse(url),
-      headers: <String, String>{
-        "Content-Type": "application/json",
-      },
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> put(String endpoint,
+      {Map<String, dynamic>? data}) async {
+    String url = ApiConstants.baseUrl + endpoint;
+    var headers = await _getHeaders();
+    return http.put(
+      Uri.parse(url),
+      headers: headers,
       body: data != null ? jsonEncode(data) : null,
     );
-    return response;
   }
 }
