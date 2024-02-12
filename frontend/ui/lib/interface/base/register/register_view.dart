@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked/stacked.dart';
 import 'package:ui/interface/base/register/register_viewmodel.dart';
 import 'package:ui/interface/constants.dart';
 import 'package:ui/models/user_model.dart';
 import 'package:ui/services/user_services.dart';
 import 'package:http/http.dart' as http;
-import 'package:ui/storage.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -113,9 +113,11 @@ class _RegisterViewState extends State<RegisterView> {
                             var responseBody = jsonDecode(response.body);
                             String message = responseBody["message"];
                             if (message == "User registered and logged in!") {
-                              var token = responseBody['access'];
-                              await SecureStorage().storeToken(token);
+                              SharedPreferences _Pref =
+                                  await SharedPreferences.getInstance();
+                              _Pref.setString("user", usernameController.text);
                             }
+
                             setState(() {
                               error = message;
                             });

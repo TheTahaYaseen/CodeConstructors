@@ -18,7 +18,6 @@ class ValidateView extends StatefulWidget {
 class _ValidateViewState extends State<ValidateView> {
   String error = "";
   String manufacturingId = "";
-  String password = "";
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +30,7 @@ class _ValidateViewState extends State<ValidateView> {
     double horizontalTextPadding = screenSize.width * 0.02;
     double verticalTextPadding = screenSize.height * 0.015;
     TextEditingController manufacturingIdController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
     manufacturingIdController.text = manufacturingId;
-    passwordController.text = password;
 
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => ValidateViewModel(),

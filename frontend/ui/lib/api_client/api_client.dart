@@ -1,44 +1,52 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:ui/storage.dart';
-import 'package:ui/utils/api_constants.dart';
+import "dart:convert";
+import "package:http/http.dart" as http;
+import "package:shared_preferences/shared_preferences.dart";
+import "package:ui/utils/api_constants.dart";
 
 class ApiClient {
-  final SecureStorage _secureStorage = SecureStorage();
-
-  Future<Map<String, String>> _getHeaders() async {
-    final token = await _secureStorage.getToken();
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
+  Future<String> _loadUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("user") ?? "Unauthenticated";
   }
 
   Future<http.Response> get(String endpoint) async {
-    String url = ApiConstants.baseUrl + endpoint;
-    var headers = await _getHeaders();
-    return http.get(Uri.parse(url), headers: headers);
+    final username = await _loadUsername();
+    final url = Uri.parse(ApiConstants.baseUrl + endpoint);
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({"user": username}),
+    );
+    return response;
   }
 
-  Future<http.Response> post(String endpoint, dynamic body) async {
-    String url = ApiConstants.baseUrl + endpoint;
-    var headers = await _getHeaders();
-    return http.post(
-      Uri.parse(url),
-      headers: headers,
+  Future<http.Response> post(String endpoint, Map<String, dynamic> body) async {
+    final username = await _loadUsername();
+    body["user"] = username;
+    final url = Uri.parse(ApiConstants.baseUrl + endpoint);
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: jsonEncode(body),
     );
+    return response;
   }
 
-  Future<http.Response> put(String endpoint, Map<String, dynamic> jsonDevice,
-      {required Map<String, dynamic> data}) async {
-    String url = ApiConstants.baseUrl + endpoint;
-    var headers = await _getHeaders();
-    return http.put(
-      Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(data),
+  Future<http.Response> put(String endpoint, Map<String, dynamic> body) async {
+    final username = await _loadUsername();
+    body["user"] = username;
+    final url = Uri.parse("${ApiConstants.baseUrl}$endpoint");
+    final response = await http.put(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(body),
     );
+    return response;
   }
 }

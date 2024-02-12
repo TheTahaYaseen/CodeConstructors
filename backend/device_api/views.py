@@ -1,28 +1,31 @@
 from device.models import Device, WifiCredential
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
 from .serializers import DeviceSerializer, WifiCredentialSerializer
 
 from django.contrib.auth.models import User
-from rest_framework_simplejwt.tokens import AccessToken
 
-def get_logged_in_user(request):
-    try:
-        token = request.META.get('HTTP_AUTHORIZATION', "").split(' ')[1]    
-        decoded_data = AccessToken(token)
-        user_id = decoded_data['user_id']
-        user = User.objects.get(id=user_id)
-        return User
-    except Exception as e:
-        return None
+# Create your views here.
 
-@api_view(["GET"])
+AUTH_NEEDED_RESPONSE = Response({"message": "Authentication needed to fetch device!"})
+
+@api_view(["POST"])
 def devices_view(request):
-    # if request.user.is_superuser:
-    devices = Device.objects.all()
-    # else:
-    # devices = Device.objects.filter(associated_user=request.user)
+
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE
+
+    if request_sending_user.is_superuser:
+        devices = Device.objects.all()
+    else:
+        devices = Device.objects.filter(associated_user=request_sending_user)
+
     device_serializer = DeviceSerializer(devices, many=True)
     return Response(device_serializer.data)
 
@@ -30,36 +33,40 @@ def devices_view(request):
 def add_manufactured_device_view(request):
     message = ""
 
-    user = get_logged_in_user(request)
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE
 
-    if user is not None:
-        print(user.username)
+    if request_sending_user.is_superuser:
+        manufacturing_id = request.data["manufacturing_id"]        
 
-    # if request.user.is_superuser:
-
-    manufacturing_id = request.data["manufacturing_id"]        
-
-    if not manufacturing_id:
-        message = "Manufacturing id must be given!"
-    elif len(manufacturing_id) > 255:
-        message = "Length of manufacturing id should be less than 255 characters!"
+        if manufacturing_id == "":
+            message = "Manufacturing id must be given!"
+        elif len(manufacturing_id) > 255:
+            message = "Length of manufacturing id should be less than 255 characters!"
+        else:
+            try:
+                device = Device.objects.get(manufacturing_id=manufacturing_id)
+                message = "Device already present with manufacturing id!"
+            except Device.DoesNotExist:        
+                device = Device.objects.create(manufacturing_id=manufacturing_id, associated_wifi_credentials=None, associated_user=None, any_presence=None, state=None, is_auto=None)
+                message = "Device added with manufacturing id!"
     else:
-        try:
-            device = Device.objects.get(manufacturing_id=manufacturing_id)
-            message = "Device already present with manufacturing id!"
-        except Device.DoesNotExist:        
-            device = Device.objects.create(manufacturing_id=manufacturing_id, associated_wifi_credentials=None, associated_user=None, any_presence=None, state=None, is_auto=None)
-            message = "Device added with manufacturing id!"
+        message = "Only admins can add manufactured devices!"
 
-    # else:
-    #     message = "Only admin can add manufactured devices!"
-
-    context = {"message": message}
-    return Response(context)
+    return Response({"message": message})
 
 @api_view(["PUT"])
 def validate_device_view(request):
     message = ""
+
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE
 
     print(request.data)
     manufacturing_id = request.data["manufacturing_id"]
@@ -68,11 +75,11 @@ def validate_device_view(request):
         device = Device.objects.get(manufacturing_id=manufacturing_id)
 
         if device.associated_user == None:
-            # device.associated_user = request.user
+            device.associated_user = request_sending_user
             device.save()
             message = "Device associated to user/added but no wifi credentials!"
-        # elif device.associated_user == request.user:
-        #     message = "Device with this manufacturing id is already associated to you!"
+        elif device.associated_user == request_sending_user:
+            message = "Device with this manufacturing id is already associated to you!"
             if device.associated_wifi_credentials == None:
                 message = message[:-1] + " but there are no wifi credentials!"
         else:
@@ -84,39 +91,55 @@ def validate_device_view(request):
     context = {"message": message}
     return Response(context)
 
-@api_view(["GET"])
+@api_view(["POST"])
 def wifi_credentials_view(request):
-    # if request.user.is_superuser:
-    wifi_credentials = WifiCredential.objects.all()
-    # else:
-    wifi_credentials = WifiCredential.objects.filter(associated_user=request.user)
+    
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE
+
+    if request_sending_user.is_superuser:
+        wifi_credentials = WifiCredential.objects.all()
+    else:
+        wifi_credentials = WifiCredential.objects.filter(associated_user=request_sending_user)
     wifi_credential_serializer = WifiCredentialSerializer(wifi_credentials, many=True)
-    return Response(wifi_credential_serializer.data)
+    return Response({"wifi_credentials_data": wifi_credential_serializer.data, "message": "Wifi credentials provided!"})
 
 @api_view(["POST"])
-# @is_user_associated_to_device
 def get_wifi_credentials_view(request, device_id):
 
-    message = ""
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE
+
     device = Device.objects.get(id=device_id)
 
     ssid = request.data["ssid"]
     password = request.data["password"]
 
-    if ssid and password:
-
-        # wifi_credentials, created = WifiCredential.objects.get_or_create(associated_user=request.user, ssid=ssid, password=password)
-        wifi_credentials, created = WifiCredential.objects.get_or_create(associated_user=None, ssid=ssid, password=password)
-        device.associated_wifi_credentials=wifi_credentials
-        device.any_presence=False
-        device.state=False
-        device.is_auto=False
-        device.save()
+    if device.associated_user == request_sending_user or request_sending_user.is_superuser:
     
-        message = "Wifi credentials associated with device!"
+        if ssid and password:
+
+                wifi_credentials, created = WifiCredential.objects.get_or_create(associated_user=request_sending_user, ssid=ssid, password=password)
+                device.associated_wifi_credentials=wifi_credentials
+                device.any_presence=False
+                device.state=False
+                device.is_auto=False
+                device.save()
+        
+                message = "Wifi credentials associated with device!"
+
+        else:
+            message = "Ssid or password must be given!"
 
     else:
-        message = "Ssid or password must be given!"
+        message = "User must be associated with device to set wifi credentials!"
+
 
     context = {"message": message}
     return Response(context)
@@ -124,65 +147,109 @@ def get_wifi_credentials_view(request, device_id):
 @api_view(["PUT"])
 def update_wifi_credentials_view(request, wifi_credentials_id):
     
-    wifi_credentials = WifiCredential.objects.get(id=wifi_credentials_id)
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE
 
-    ssid = wifi_credentials.ssid
-    password = wifi_credentials.password
+    wifi_credentials = WifiCredential.objects.get(id=wifi_credentials_id)
 
     ssid = request.data["ssid"]
     password = request.data["password"]
 
-    if ssid and password:
+    if wifi_credentials.associated_user == request_sending_user or request_sending_user.is_superuser:
 
-        wifi_credentials.ssid = ssid
-        wifi_credentials.password = password
-        wifi_credentials.save()
+        if ssid and password:
 
-        message = "Wifi credentials updated!"
+            wifi_credentials.ssid = ssid
+            wifi_credentials.password = password
+            wifi_credentials.save()
+
+            message = "Wifi credentials updated!"
+
+        else:
+            message = "Ssid and password must be given!"
 
     else:
-        message = "Ssid and password must be given!"
-
+        message = "User must be associated to update wifi credentials!"
 
     context = {"message": message}
-    return Response(context)    
+    return Response(context)
 
 @api_view(["PUT"])
-# @is_user_associated_to_device
 def toggle_state_view(request, device_id):
-    device = Device.objects.get(id=device_id)
-    device.state = not device.state
-    device.save()
 
-    message = "State toggled!"
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE        
+
+    device = Device.objects.get(id=device_id)
+    
+    if request_sending_user == device.associated_user or request_sending_user.is_superuser:
+
+        device.state = not device.state
+        device.save()
+
+        message = "State toggled!"
+
+    else:
+        message = "User must be associated to toggle state!"
 
     context = {"message": message}
-    return Response(context)    
+    return Response(context)
 
 @api_view(["PUT"])
-# @is_user_associated_to_device
 def toggle_mode_view(request, device_id):
-    device = Device.objects.get(id=device_id)
-    device.is_auto = not device.is_auto
-    device.save()
 
-    message = "Mode toggled!"
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE        
+
+    device = Device.objects.get(id=device_id)
+    
+    if request_sending_user == device.associated_user or request_sending_user.is_superuser:
+
+        device.is_auto = not device.is_auto
+        device.save()
+
+        message = "Mode toggled!"
+
+    else:
+        message = "User must be associated to toggle mode!"
 
     context = {"message": message}
-    return Response(context)    
+    return Response(context)
 
 @api_view(["PUT"])
-# @is_user_associated_to_device
 def remove_device_view(request, device_id):
-    device = Device.objects.get(id=device_id)
-    device.associated_user = None
-    device.associated_wifi_credentials = None
-    device.any_presence = None
-    device.state = None
-    device.is_auto = None
-    device.save()
 
-    message = "Device removed from association!"
+    try:
+        request_associated_username = request.data["user"]
+        request_sending_user = User.objects.get(username=request_associated_username)
+    except Exception:
+        return AUTH_NEEDED_RESPONSE        
+
+    device = Device.objects.get(id=device_id)
+    
+    if request_sending_user == device.associated_user or request_sending_user.is_superuser:
+
+        device = Device.objects.get(id=device_id)
+        device.associated_user = None
+        device.associated_wifi_credentials = None
+        device.any_presence = None
+        device.state = None
+        device.is_auto = None
+        device.save()
+
+        message = "Device removed from association!"
+
+    else:
+        message = "User must be associated to remove device!"
 
     context = {"message": message}
-    return Response(context)    
+    return Response(context)

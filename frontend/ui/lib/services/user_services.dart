@@ -9,14 +9,14 @@ class UserServices {
 
   Future<http.Response> register(UserModel user) async {
     String endpoint = ApiConstants.register;
-    Map jsonUser = user.toJson();
+    Map<String, dynamic> jsonUser = user.toJson();
 
     return await _apiClient.post(endpoint, jsonUser);
   }
 
   Future<http.Response> login(UserModel user) async {
     String endpoint = ApiConstants.login;
-    Map jsonUser = user.toJson();
+    Map<String, dynamic> jsonUser = user.toJson();
 
     return await _apiClient.post(endpoint, jsonUser);
   }

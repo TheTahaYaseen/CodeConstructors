@@ -7,7 +7,7 @@ import 'package:ui/interface/constants.dart';
 import 'package:ui/models/user_model.dart';
 import 'package:ui/services/user_services.dart';
 import 'package:http/http.dart' as http;
-import 'package:ui/storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -113,8 +113,9 @@ class _LoginViewState extends State<LoginView> {
                             var responseBody = jsonDecode(response.body);
                             String message = responseBody["message"];
                             if (message == "User logged in!") {
-                              var token = responseBody['access'];
-                              await SecureStorage().storeToken(token);
+                              SharedPreferences _Pref =
+                                  await SharedPreferences.getInstance();
+                              _Pref.setString("user", usernameController.text);
                             }
                             setState(() {
                               error = message;

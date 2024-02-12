@@ -8,7 +8,7 @@ import 'package:ui/models/device_model.dart';
 class DeviceServices {
   final ApiClient _apiClient = ApiClient();
 
-  Future<List<DeviceModel>> devices(DeviceModel device) async {
+  Future<List<DeviceModel>> devices() async {
     String endpoint = ApiConstants.baseDevicesUrl;
     final response = await _apiClient.get(endpoint);
 
@@ -34,27 +34,27 @@ class DeviceServices {
     String endpoint = ApiConstants.validate;
     Map<String, dynamic> jsonDevice = device.toJson();
 
-    return await _apiClient.put(endpoint, jsonDevice, data: {});
+    return await _apiClient.put(endpoint, jsonDevice);
   }
 
   Future<http.Response> toggleState(DeviceModel device) async {
     String endpoint =
         ApiConstants.toggleState.replaceAll("deviceId", device.id.toString());
 
-    return await _apiClient.put(endpoint, {}, data: {});
+    return await _apiClient.put(endpoint, {});
   }
 
   Future<http.Response> toggleMode(DeviceModel device) async {
     String endpoint =
         ApiConstants.toggleMode.replaceAll("deviceId", device.id.toString());
 
-    return await _apiClient.put(endpoint, {}, data: {});
+    return await _apiClient.put(endpoint, {});
   }
 
   Future<http.Response> removeDevice(DeviceModel device) async {
     String endpoint =
         ApiConstants.removeDevice.replaceAll("deviceId", device.id.toString());
 
-    return await _apiClient.put(endpoint, {}, data: {});
+    return await _apiClient.put(endpoint, {});
   }
 }

@@ -27,7 +27,7 @@ class WifiCredentialServices {
   Future<http.Response> getWifiCredentials(
       WifiCredentialModel wifiCredential) async {
     String endpoint = ApiConstants.getWifiCredentials;
-    String jsonWifiCredential = jsonEncode(wifiCredential.toJson());
+    Map<String, dynamic> jsonWifiCredential = wifiCredential.toJson();
 
     return await _apiClient.post(endpoint, jsonWifiCredential);
   }
@@ -37,6 +37,6 @@ class WifiCredentialServices {
     String endpoint = ApiConstants.updateWifiCredentials;
     Map<String, dynamic> jsonWifiCredential = wifiCredential.toJson();
 
-    return await _apiClient.put(endpoint, jsonWifiCredential, data: {});
+    return await _apiClient.put(endpoint, jsonWifiCredential);
   }
 }
