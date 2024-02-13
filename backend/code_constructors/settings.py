@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'device.apps.DeviceConfig',
     
     'rest_framework',
-    'rest_framework_simplejwt',
     
     'base_api.apps.BaseApiConfig',
     'device_api.apps.DeviceApiConfig',
@@ -107,12 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

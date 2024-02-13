@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-import 'package:ui/interface/constants.dart';
 import 'package:ui/interface/devices/devices/devices_viewmodel.dart';
-import 'package:ui/models/device_model.dart';
-import 'package:ui/services/device_services.dart';
 
 class DevicesView extends StatelessWidget {
   const DevicesView({Key? key}) : super(key: key);

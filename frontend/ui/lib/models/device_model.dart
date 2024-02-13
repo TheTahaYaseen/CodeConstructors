@@ -1,5 +1,5 @@
 class DeviceModel {
-  String? id;
+  int? id;
   String? manufacturingId;
   String? associatedWifiCredentials;
   String? associatedUser;
