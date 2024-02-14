@@ -8,8 +8,7 @@ import 'package:ui/models/wifi_credential_model.dart';
 class WifiCredentialServices {
   final ApiClient _apiClient = ApiClient();
 
-  Future<List<WifiCredentialModel>> wifiCredentials(
-      WifiCredentialModel wifiCredential) async {
+  Future<List<WifiCredentialModel>> wifiCredentials() async {
     String endpoint = ApiConstants.wifiCredentials;
     final response = await _apiClient.get(endpoint);
 
@@ -25,8 +24,10 @@ class WifiCredentialServices {
   }
 
   Future<http.Response> getWifiCredentials(
-      WifiCredentialModel wifiCredential) async {
-    String endpoint = ApiConstants.getWifiCredentials;
+      WifiCredentialModel wifiCredential, String manufacturingId) async {
+    String endpoint =
+        ApiConstants.getWifiCredentials.replaceAll("deviceId", manufacturingId);
+
     Map<String, dynamic> jsonWifiCredential = wifiCredential.toJson();
 
     return await _apiClient.post(endpoint, jsonWifiCredential);
@@ -34,7 +35,8 @@ class WifiCredentialServices {
 
   Future<http.Response> updateWifiCredentials(
       WifiCredentialModel wifiCredential) async {
-    String endpoint = ApiConstants.updateWifiCredentials;
+    String endpoint = ApiConstants.updateWifiCredentials
+        .replaceAll("wifiCredentialsId", wifiCredential.id.toString());
     Map<String, dynamic> jsonWifiCredential = wifiCredential.toJson();
 
     return await _apiClient.put(endpoint, jsonWifiCredential);

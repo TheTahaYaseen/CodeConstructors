@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:ui/interface/devices/get_wifi_credentials/get_wifi_credentials_viewmodel.dart';
 import 'package:ui/interface/constants.dart';
-import 'package:ui/models/user_model.dart';
-import 'package:ui/services/user_services.dart';
+import 'package:ui/models/wifi_credential_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:ui/services/wifi_credential_services.dart';
 
 class GetWifiCredentialsView extends StatefulWidget {
   const GetWifiCredentialsView({super.key});
@@ -17,11 +17,13 @@ class GetWifiCredentialsView extends StatefulWidget {
 
 class _GetWifiCredentialsViewState extends State<GetWifiCredentialsView> {
   String error = "";
-  String username = "";
+  String ssid = "";
   String password = "";
 
   @override
   Widget build(BuildContext context) {
+    final String manufacturingId =
+        ModalRoute.of(context)!.settings.arguments as String;
     Size screenSize = MediaQuery.of(context).size;
     double borderSize = (screenSize.width + screenSize.height) * 0.0015;
     double outerHorizontalPadding = screenSize.width * 0.1;
@@ -30,9 +32,9 @@ class _GetWifiCredentialsViewState extends State<GetWifiCredentialsView> {
     double innerVerticalPadding = screenSize.height * 0.05;
     double horizontalTextPadding = screenSize.width * 0.02;
     double verticalTextPadding = screenSize.height * 0.015;
-    TextEditingController usernameController = TextEditingController();
+    TextEditingController ssidController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-    usernameController.text = username;
+    ssidController.text = ssid;
     passwordController.text = password;
 
     return ViewModelBuilder.reactive(
@@ -57,7 +59,7 @@ class _GetWifiCredentialsViewState extends State<GetWifiCredentialsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'GetWifiCredentials',
+                      'Associate Wifi Credentials',
                       style:
                           Theme.of(context).textTheme.headlineLarge?.copyWith(
                                 color: AppConstants.primaryColor,
@@ -74,11 +76,11 @@ class _GetWifiCredentialsViewState extends State<GetWifiCredentialsView> {
                     ),
                     const SizedBox(height: 12),
                     TextField(
-                      controller: usernameController,
+                      controller: ssidController,
                       decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           label: Text(
-                            'Username',
+                            'Ssid',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyLarge
@@ -104,11 +106,15 @@ class _GetWifiCredentialsViewState extends State<GetWifiCredentialsView> {
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            UserModel user = UserModel(
-                                username: usernameController.text,
-                                password: passwordController.text);
+                            WifiCredentialModel wifiCredential =
+                                WifiCredentialModel(
+                              ssid: ssidController.text,
+                              password: passwordController.text,
+                            );
                             http.Response response =
-                                await UserServices().login(user);
+                                await WifiCredentialServices()
+                                    .getWifiCredentials(
+                                        wifiCredential, manufacturingId);
                             var responseBody = jsonDecode(response.body);
                             String message = responseBody["message"];
                             setState(() {
@@ -125,7 +131,7 @@ class _GetWifiCredentialsViewState extends State<GetWifiCredentialsView> {
                                 vertical: verticalTextPadding,
                                 horizontal: horizontalTextPadding),
                             child: Text(
-                              'GetWifiCredentials',
+                              'Associate',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge

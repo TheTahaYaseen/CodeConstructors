@@ -31,14 +31,13 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    double borderSize = (screenSize.width + screenSize.height) * 0.0015;
-    double outerHorizontalPadding = screenSize.width * 0.1;
-    double outerVerticalPadding = screenSize.height * 0.1;
-    double innerHorizontalPadding = screenSize.width * 0.05;
-    double innerVerticalPadding = screenSize.height * 0.05;
-    double horizontalTextPadding = screenSize.width * 0.02;
-    double verticalTextPadding = screenSize.height * 0.015;
+    double ApiConstants.borderSize = (screenSize.width + screenSize.height) * 0.0015;
+    double ApiConstants.outerHorizontalPadding = screenSize.width * 0.1;
+    double ApiConstants.ApiConstants.outerVerticalPadding = screenSize.height * 0.1;
+    double ApiConstants.innerHorizontalPadding = screenSize.width * 0.05;
+    double ApiConstants.innerVerticalPadding = screenSize.height * 0.05;
+    double ApiConstants.horizontalTextPadding = screenSize.width * 0.02;
+    double ApiConstants.verticalTextPadding = screenSize.height * 0.015;
     TextEditingController usernameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
     usernameController.text = username;
@@ -50,17 +49,17 @@ class _LoginViewState extends State<LoginView> {
         return Scaffold(
           body: Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: outerHorizontalPadding,
-                vertical: outerVerticalPadding),
+                horizontal: ApiConstants.outerHorizontalPadding,
+                vertical: ApiConstants.ApiConstants.outerVerticalPadding),
             child: Container(
               decoration: BoxDecoration(
                   border: Border.all(
-                      color: AppConstants.primaryColor, width: borderSize),
+                      color: AppConstants.primaryColor, width: ApiConstants.borderSize),
                   borderRadius: BorderRadius.circular(screenSize.width / 48)),
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: innerHorizontalPadding,
-                    vertical: innerVerticalPadding),
+                    horizontal: ApiConstants.innerHorizontalPadding,
+                    vertical: ApiConstants.innerVerticalPadding),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,8 +130,8 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: verticalTextPadding,
-                                horizontal: horizontalTextPadding),
+                                vertical: ApiConstants.verticalTextPadding,
+                                horizontal: ApiConstants.horizontalTextPadding),
                             child: Text(
                               'Login',
                               style: Theme.of(context)

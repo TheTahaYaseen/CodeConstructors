@@ -12,12 +12,13 @@ class DeviceServices {
     String endpoint = ApiConstants.baseDevicesUrl;
     final response = await _apiClient.get(endpoint);
 
-    List<dynamic> jsonResponses = jsonDecode(response.body)["data"];
+    List<dynamic> jsonResponses = jsonDecode(response.body);
 
     List<DeviceModel> devices = [];
 
     for (var json in jsonResponses) {
-      devices.add(DeviceModel.fromJson(json));
+      DeviceModel device = DeviceModel.fromJson(json);
+      devices.add(device);
     }
 
     return devices;
@@ -38,22 +39,22 @@ class DeviceServices {
   }
 
   Future<http.Response> toggleState(DeviceModel device) async {
-    String endpoint =
-        ApiConstants.toggleState.replaceAll("deviceId", device.id.toString());
+    String endpoint = ApiConstants.toggleState
+        .replaceAll("deviceId", device.manufacturingId.toString());
 
     return await _apiClient.put(endpoint, {});
   }
 
   Future<http.Response> toggleMode(DeviceModel device) async {
-    String endpoint =
-        ApiConstants.toggleMode.replaceAll("deviceId", device.id.toString());
+    String endpoint = ApiConstants.toggleMode
+        .replaceAll("deviceId", device.manufacturingId.toString());
 
     return await _apiClient.put(endpoint, {});
   }
 
   Future<http.Response> removeDevice(DeviceModel device) async {
-    String endpoint =
-        ApiConstants.removeDevice.replaceAll("deviceId", device.id.toString());
+    String endpoint = ApiConstants.removeDevice
+        .replaceAll("deviceId", device.manufacturingId.toString());
 
     return await _apiClient.put(endpoint, {});
   }

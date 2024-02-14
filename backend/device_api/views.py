@@ -108,7 +108,7 @@ def wifi_credentials_view(request):
     return Response({"wifi_credentials_data": wifi_credential_serializer.data, "message": "Wifi credentials provided!"})
 
 @api_view(["POST"])
-def get_wifi_credentials_view(request, device_id):
+def get_wifi_credentials_view(request, manufacturing_id):
 
     try:
         request_associated_username = request.data["user"]
@@ -116,7 +116,7 @@ def get_wifi_credentials_view(request, device_id):
     except Exception:
         return AUTH_NEEDED_RESPONSE
 
-    device = Device.objects.get(id=device_id)
+    device = Device.objects.get(manufacturing_id=manufacturing_id)
 
     ssid = request.data["ssid"]
     password = request.data["password"]
@@ -153,6 +153,8 @@ def update_wifi_credentials_view(request, wifi_credentials_id):
     except Exception:
         return AUTH_NEEDED_RESPONSE
 
+    wifi_credentials_id = int(wifi_credentials_id)
+
     wifi_credentials = WifiCredential.objects.get(id=wifi_credentials_id)
 
     ssid = request.data["ssid"]
@@ -178,7 +180,7 @@ def update_wifi_credentials_view(request, wifi_credentials_id):
     return Response(context)
 
 @api_view(["PUT"])
-def toggle_state_view(request, device_id):
+def toggle_state_view(request, manufacturing_id):
 
     try:
         request_associated_username = request.data["user"]
@@ -186,7 +188,7 @@ def toggle_state_view(request, device_id):
     except Exception:
         return AUTH_NEEDED_RESPONSE        
 
-    device = Device.objects.get(id=device_id)
+    device = Device.objects.get(manufacturing_id=manufacturing_id)
     
     if request_sending_user == device.associated_user or request_sending_user.is_superuser:
 
@@ -202,7 +204,7 @@ def toggle_state_view(request, device_id):
     return Response(context)
 
 @api_view(["PUT"])
-def toggle_mode_view(request, device_id):
+def toggle_mode_view(request, manufacturing_id):
 
     try:
         request_associated_username = request.data["user"]
@@ -210,7 +212,7 @@ def toggle_mode_view(request, device_id):
     except Exception:
         return AUTH_NEEDED_RESPONSE        
 
-    device = Device.objects.get(id=device_id)
+    device = Device.objects.get(manufacturing_id=manufacturing_id)
     
     if request_sending_user == device.associated_user or request_sending_user.is_superuser:
 
@@ -226,7 +228,7 @@ def toggle_mode_view(request, device_id):
     return Response(context)
 
 @api_view(["PUT"])
-def remove_device_view(request, device_id):
+def remove_device_view(request, manufacturing_id):
 
     try:
         request_associated_username = request.data["user"]
@@ -234,11 +236,11 @@ def remove_device_view(request, device_id):
     except Exception:
         return AUTH_NEEDED_RESPONSE        
 
-    device = Device.objects.get(id=device_id)
+    device = Device.objects.get(manufacturing_id=manufacturing_id)
     
     if request_sending_user == device.associated_user or request_sending_user.is_superuser:
 
-        device = Device.objects.get(id=device_id)
+        device = Device.objects.get(manufacturing_id=manufacturing_id)
         device.associated_user = None
         device.associated_wifi_credentials = None
         device.any_presence = None

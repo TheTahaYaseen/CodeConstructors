@@ -1,11 +1,11 @@
 class DeviceModel {
   int? id;
   String? manufacturingId;
-  String? associatedWifiCredentials;
-  String? associatedUser;
-  String? anyPresence;
-  String? state;
-  String? isAuto;
+  int? associatedWifiCredentials;
+  int? associatedUser;
+  bool? anyPresence;
+  bool? state;
+  bool? isAuto;
 
   DeviceModel({
     this.id,

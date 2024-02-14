@@ -52,7 +52,7 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:60159",  
+    "http://localhost:52111",  
 ]
 
 ROOT_URLCONF = 'code_constructors.urls'

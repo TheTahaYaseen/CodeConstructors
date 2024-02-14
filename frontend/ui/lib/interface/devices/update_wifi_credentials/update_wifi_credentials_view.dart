@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-import 'package:ui/interface/devices/update_wifi_credentials/update_wifi_credentials_viewmodel.dart';
 import 'package:ui/interface/constants.dart';
-import 'package:ui/models/user_model.dart';
-import 'package:ui/services/user_services.dart';
+import 'package:ui/interface/devices/update_wifi_credentials/update_wifi_credentials_viewmodel.dart';
+import 'package:ui/models/wifi_credential_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:ui/services/wifi_credential_services.dart';
 
 class UpdateWifiCredentialsView extends StatefulWidget {
   const UpdateWifiCredentialsView({super.key});
@@ -18,11 +18,13 @@ class UpdateWifiCredentialsView extends StatefulWidget {
 
 class _UpdateWifiCredentialsViewState extends State<UpdateWifiCredentialsView> {
   String error = "";
-  String username = "";
+  String ssid = "";
   String password = "";
 
   @override
   Widget build(BuildContext context) {
+    final int wifiCredentialId =
+        ModalRoute.of(context)!.settings.arguments as int;
     Size screenSize = MediaQuery.of(context).size;
     double borderSize = (screenSize.width + screenSize.height) * 0.0015;
     double outerHorizontalPadding = screenSize.width * 0.1;
@@ -31,9 +33,9 @@ class _UpdateWifiCredentialsViewState extends State<UpdateWifiCredentialsView> {
     double innerVerticalPadding = screenSize.height * 0.05;
     double horizontalTextPadding = screenSize.width * 0.02;
     double verticalTextPadding = screenSize.height * 0.015;
-    TextEditingController usernameController = TextEditingController();
+    TextEditingController ssidController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-    usernameController.text = username;
+    ssidController.text = ssid;
     passwordController.text = password;
 
     return ViewModelBuilder.reactive(
@@ -58,7 +60,7 @@ class _UpdateWifiCredentialsViewState extends State<UpdateWifiCredentialsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'UpdateWifiCredentials',
+                      'Update Wifi Credentials',
                       style:
                           Theme.of(context).textTheme.headlineLarge?.copyWith(
                                 color: AppConstants.primaryColor,
@@ -75,11 +77,11 @@ class _UpdateWifiCredentialsViewState extends State<UpdateWifiCredentialsView> {
                     ),
                     const SizedBox(height: 12),
                     TextField(
-                      controller: usernameController,
+                      controller: ssidController,
                       decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           label: Text(
-                            'Username',
+                            'Ssid',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyLarge
@@ -105,11 +107,15 @@ class _UpdateWifiCredentialsViewState extends State<UpdateWifiCredentialsView> {
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            UserModel user = UserModel(
-                                username: usernameController.text,
-                                password: passwordController.text);
+                            WifiCredentialModel wifiCredential =
+                                WifiCredentialModel(
+                              ssid: ssidController.text,
+                              password: passwordController.text,
+                              id: wifiCredentialId,
+                            );
                             http.Response response =
-                                await UserServices().login(user);
+                                await WifiCredentialServices()
+                                    .updateWifiCredentials(wifiCredential);
                             var responseBody = jsonDecode(response.body);
                             String message = responseBody["message"];
                             setState(() {
@@ -126,7 +132,7 @@ class _UpdateWifiCredentialsViewState extends State<UpdateWifiCredentialsView> {
                                 vertical: verticalTextPadding,
                                 horizontal: horizontalTextPadding),
                             child: Text(
-                              'UpdateWifiCredentials',
+                              'Associate',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge

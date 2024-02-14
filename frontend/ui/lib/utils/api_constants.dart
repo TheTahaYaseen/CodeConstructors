@@ -16,9 +16,9 @@ class ApiConstants {
   static String getWifiCredentials =
       "${baseDevicesUrl}deviceId/get_wifi_credentials";
   static String updateWifiCredentials =
-      "${baseDevicesUrl}update_wifi_credentials/update/wifiCredentialsId";
+      "${baseDevicesUrl}wifi_credentials/update/wifiCredentialsId";
 
   static String removeDevice = "${baseDevicesUrl}remove/deviceId";
+  static String toggleMode = "${baseDevicesUrl}deviceId/toggle_mode";
   static String toggleState = "${baseDevicesUrl}deviceId/toggle_state";
-  static String toggleMode = "${baseDevicesUrl}deviceId/toggle_state";
 }
