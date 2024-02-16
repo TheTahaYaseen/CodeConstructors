@@ -12,6 +12,15 @@ from django.contrib.auth.models import User
 
 AUTH_NEEDED_RESPONSE = Response({"message": "Authentication needed to fetch device!"})
 
+# For Arduino's Recognition
+@api_view(["GET"])
+def device_view(request, manufacturing_id):
+
+    device = Device.objects.get(manufacturing_id=manufacturing_id)
+
+    device_serializer = DeviceSerializer(device)
+    return Response(device_serializer.data)
+
 @api_view(["POST"])
 def devices_view(request):
 
