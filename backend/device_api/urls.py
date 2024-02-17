@@ -14,5 +14,6 @@ urlpatterns = [
     path("remove/<str:manufacturing_id>", views.remove_device_view, name="remove_device"),
     path("<str:manufacturing_id>/toggle_state", views.toggle_state_view, name="toggle_state"),    
     path("<str:manufacturing_id>/toggle_mode", views.toggle_mode_view, name="toggle_mode"),    
+    path("<str:manufacturing_id>/toggle_presence", views.toggle_presence_view, name="toggle_presence"),    
     path("<str:manufacturing_id>", views.device_view, name="device"),    
 ]

@@ -237,6 +237,19 @@ def toggle_mode_view(request, manufacturing_id):
     return Response(context)
 
 @api_view(["PUT"])
+def toggle_presence_view(request, manufacturing_id):
+
+    device = Device.objects.get(manufacturing_id=manufacturing_id)
+    
+    device.any_presence = not device.any_presence
+    device.save()
+
+    message = "Presence Toggled!"
+
+    context = {"message": message}
+    return Response(context)
+
+@api_view(["PUT"])
 def remove_device_view(request, manufacturing_id):
 
     try:
